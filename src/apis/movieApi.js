@@ -11,7 +11,7 @@ export const getListMovieAPI = async () => {
   try {
     const response = await fetcher.get("/QuanLyPhim/LayDanhSachPhim", {
       params: {
-        maNhom: "GP01",
+        maNhom: "GP03",
       },
       //"/QuanLyPhim/LayDanhSachPhim?maNhom=GP01&page=1&pageSize=10"
     });
@@ -26,5 +26,8 @@ export const getMovieDetailsAPI = async (movieId) => {
         MaPhim: movieId,
       },
     });
-  } catch (error) {}
+    return response.data.content;
+  } catch (error) {
+    throw Error("error");
+  }
 };

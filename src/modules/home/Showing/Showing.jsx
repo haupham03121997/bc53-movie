@@ -9,9 +9,12 @@ import {
   CardMedia,
   Grid,
   Typography,
+  Container,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Showing = () => {
+  const navigate = useNavigate();
   const {
     data = [],
     isLoading,
@@ -21,8 +24,9 @@ const Showing = () => {
     queryKey: ["list-movie"],
     queryFn: getListMovieAPI,
   });
+
   return (
-    <div>
+    <Container maxWidth="lg">
       <Grid container spacing={4}>
         {/* row */}
         {data.map((item) => (
@@ -35,15 +39,31 @@ const Showing = () => {
                 title="green iguana"
               />
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
+                <Typography
+                  gutterBottom
+                  variant="h5"
+                  component="div"
+                  className="truncate"
+                >
                   {item.tenPhim}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  className="truncate truncate--2"
+                >
                   {item.moTa}
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="large" variant="contained" fullWidth>
+                <Button
+                  size="large"
+                  variant="contained"
+                  fullWidth
+                  onClick={() => {
+                    navigate(`movie/${item.maPhim}`);
+                  }}
+                >
                   Xem chi tiết
                 </Button>
               </CardActions>
@@ -51,7 +71,7 @@ const Showing = () => {
           </Grid>
         ))}
       </Grid>
-    </div>
+    </Container>
   );
 };
 
