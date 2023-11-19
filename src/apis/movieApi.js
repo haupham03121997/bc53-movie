@@ -1,3 +1,4 @@
+import { GROUP_CODE } from "../constants";
 import fetcher from "./fetcher";
 
 export const getBannersAPI = async () => {
@@ -11,7 +12,7 @@ export const getListMovieAPI = async () => {
   try {
     const response = await fetcher.get("/QuanLyPhim/LayDanhSachPhim", {
       params: {
-        maNhom: "GP03",
+        maNhom: GROUP_CODE,
       },
       //"/QuanLyPhim/LayDanhSachPhim?maNhom=GP01&page=1&pageSize=10"
     });

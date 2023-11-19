@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieShowTimesAPI } from "../../../apis/cinemaAPI";
-import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Button, Stack, Tab, Tabs, Typography } from "@mui/material";
+import dayjs from "dayjs";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -13,6 +14,7 @@ function TabPanel(props) {
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
+      style={{ width: "100%" }}
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
@@ -21,13 +23,6 @@ function TabPanel(props) {
       )}
     </div>
   );
-}
-
-function a11yProps(index) {
-  return {
-    id: `vertical-tab-${index}`,
-    "aria-controls": `vertical-tabpanel-${index}`,
-  };
 }
 
 const ShowTimes = ({ movieId }) => {
@@ -40,7 +35,7 @@ const ShowTimes = ({ movieId }) => {
     queryFn: () => getMovieShowTimesAPI(movieId),
     enabled: !!movieId,
   });
-  console.log("data", data);
+
   const cinemaSystems = data.heThongRapChieu || [];
   console.log("cinemaSystems", cinemaSystems);
 
@@ -63,20 +58,44 @@ const ShowTimes = ({ movieId }) => {
         orientation="vertical"
         aria-label="Vertical tabs example"
         sx={{ borderRight: 1, borderColor: "divider" }}
+        value={value}
+        onChange={(event, newValue) => {
+          setValue(newValue);
+        }}
       >
         {cinemaSystems.map((item) => {
           return (
             <Tab
-              onClick={() => handleChange(item.maHeThongRap)}
               label={<img src={item.logo} style={{ width: 80 }} />}
-              {...a11yProps(item.maHeThongRap)}
+              value={item.maHeThongRap}
             />
           );
         })}
       </Tabs>
       {cinemaSystems.map((item) => (
         <TabPanel value={value} index={item.maHeThongRap}>
-          {item.tenHeThongRap}
+          {/* display: flex 
+              flex-direction: column,
+              gap : 3
+          */}
+          {/* <Stack direction="column" spacing={3} sx={{ width: "100%" }}> */}
+          {item.cumRapChieu.map((rap) => (
+            <Box sx={{ mb: 4 }}>
+              <Typography component={"h4"}>{rap.tenCumRap}</Typography>
+              <Stack spacing={2} direction={"row"}>
+                {rap.lichChieuPhim.map((lichChieu) => {
+                  // const date = new Date(lichChieu.ngayChieuGioChieu);
+                  // const times = `${date.getDay()}/${date.getMonth()}/${date.getFullYear()} ~ ${date.getHours()}-${date.getMinutes()}`; // dd/mm/yyyy ~ hh-mm
+                  const times = dayjs(lichChieu.ngayChieuGioChieu).format(
+                    "DD-MM-YYYY ~ HH:mm"
+                  );
+                  console.log("times", times);
+                  return <Button variant="outlined">{times}</Button>;
+                })}
+              </Stack>
+            </Box>
+          ))}
+          {/* </Stack> */}
         </TabPanel>
       ))}
     </Box>
