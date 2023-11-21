@@ -9,3 +9,13 @@ export const signupAPI = async (payload) => {
     throw "Lỗi rồi 🤧";
   }
 };
+
+export const signinAPI = async (payload) => {
+  try {
+    // payload: { taiKhoan: "", matKhau:""}
+    const response = await fetcher.post("/QuanLyNguoiDung/DangNhap", payload);
+    return response.data.content;
+  } catch (error) {
+    throw "Lỗi rồi 🤧";
+  }
+};
