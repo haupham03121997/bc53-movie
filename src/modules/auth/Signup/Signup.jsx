@@ -16,6 +16,7 @@ import { signupAPI } from "../../../apis/userAPI";
 import { LoadingButton } from "@mui/lab";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../routes/path";
+import { useAuth } from "../../../contexts/UserContext/UserContent";
 
 const schemaSignup = yup.object({
   taiKhoan: yup
@@ -53,6 +54,8 @@ const Signup = () => {
     mode: "all",
   });
 
+  const { currentUser } = useAuth();
+
   const navigate = useNavigate();
 
   const { mutate: handleSignup, isPending } = useMutation({
@@ -79,6 +82,10 @@ const Signup = () => {
 
     // Gọi api xong thì, redirect sang trang đăng nhập
   };
+
+  if (currentUser) {
+    return <Navigate to={PATH.HOME} />;
+  }
 
   return (
     <Container maxWidth="sm">

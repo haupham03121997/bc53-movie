@@ -4,10 +4,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { signinAPI } from "../../../apis/userAPI";
 import { LoadingButton } from "@mui/lab";
-import { useNavigate } from "react-router-dom";
+import { Navigate, json, useNavigate } from "react-router-dom";
 import { PATH } from "../../../routes/path";
+import { CURRENT_USER } from "../../../constants";
+import { useAuth } from "../../../contexts/UserContext/UserContent";
 
 const Signin = () => {
+  const { currentUser, handleSignin: handleSigninContext } = useAuth();
   const navigate = useNavigate();
   const { handleSubmit, register } = useForm({
     defaultValues: {
@@ -19,8 +22,10 @@ const Signin = () => {
   const { mutate: handleSignin, isPending } = useMutation({
     mutationFn: (values) => signinAPI(values), //{ taiKhoan : "" , matKhau:""}
     onSuccess: (values) => {
-      console.log("values", values);
-      navigate(PATH.HOME);
+      //values là thông tin user
+      handleSigninContext(values);
+      if (values.maLoaiNguoiDung === "KhachHang") navigate(PATH.HOME);
+      if (values.maLoaiNguoiDung === "QuanTri") navigate(PATH.ADMIN);
     },
     onError: (error) => {
       console.log("error", error);
@@ -31,6 +36,10 @@ const Signin = () => {
   const onSubmit = (formValues) => {
     handleSignin(formValues); // { taiKhoan : "" , matKhau:""}
   };
+
+  if (currentUser) {
+    return <Navigate to={PATH.HOME} />;
+  }
 
   return (
     <div>
