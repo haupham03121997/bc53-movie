@@ -1,6 +1,6 @@
 import React from "react";
 import { getListMovieAPI } from "../../../apis/movieApi";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Card,
@@ -23,7 +23,9 @@ const Showing = () => {
   } = useQuery({
     queryKey: ["list-movie"],
     queryFn: getListMovieAPI,
+    staleTime: 50000,
   });
+  const queryClient = useQueryClient();
 
   return (
     <Container maxWidth="lg">

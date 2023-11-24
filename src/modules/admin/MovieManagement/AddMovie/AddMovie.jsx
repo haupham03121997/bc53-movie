@@ -9,6 +9,9 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useForm, Controller } from "react-hook-form";
 import { GROUP_CODE } from "../../../../constants";
 import dayjs from "dayjs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addMovieAPI } from "../../../../apis/movieApi";
+import { LoadingButton } from "@mui/lab";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -23,7 +26,8 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const AddMovie = () => {
-  const { handleSubmit, register, control, setValue } = useForm({
+  const queryClient = useQueryClient();
+  const { handleSubmit, register, control, setValue, watch } = useForm({
     defaultValues: {
       tenPhim: "",
       trailer: "",
@@ -38,10 +42,43 @@ const AddMovie = () => {
     },
   });
 
+  const file = watch("hinhAnh"); // [0]
+
+  // useQuery({ queryKey: ["list-movie-admin"]})
+  const { mutate: handleAddMovie, isPending } = useMutation({
+    mutationFn: (payload) => addMovieAPI(payload),
+    onSuccess: () => {
+      // call api get list
+      queryClient.invalidateQueries({ queryKey: ["list-movie"] });
+    },
+  });
+
   const onSubmit = (formValues) => {
-    console.log("formValues", formValues);
+    console.log("formValues", formValues.hinhAnh[0]);
+    const formData = new FormData();
+    formData.append("tenPhim", formValues.tenPhim);
+    formData.append("trailer", formValues.trailer);
+    formData.append("moTa", formValues.moTa);
+    formData.append("maNhom", formValues.maNhom);
+    formData.append("sapChieu", formValues.sapChieu);
+    formData.append("dangChieu", formValues.dangChieu);
+    formData.append("hot", formValues.hot);
+    formData.append("danhGia", formValues.danhGia);
+    formData.append("hinhAnh", formValues.hinhAnh[0]);
+    handleAddMovie(formData);
   };
 
+  const previewImage = (file) => {
+    return URL.createObjectURL(file);
+  };
+
+  useEffect(() => {
+    if (file?.length > 0) {
+      console.log("previewImage", previewImage(file?.[0])); // url
+    }
+  }, [file]);
+
+  console.log(file);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
@@ -82,17 +119,36 @@ const AddMovie = () => {
                 />
 
                 <TextField label="Đánh giá" {...register("danhGia")} />
-                <Button
-                  component="label"
+                {!file && (
+                  <Button
+                    component="label"
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload file
+                    <VisuallyHiddenInput
+                      type="file"
+                      {...register("hinhAnh")}
+                      accept=".png,.gif,.jpg"
+                    />
+                  </Button>
+                )}
+                {file?.length > 0 && (
+                  <>
+                    <img src={previewImage(file[0])} width={240} />
+                    <Button onClick={() => setValue("hinhAnh", undefined)}>
+                      Xoá hình
+                    </Button>
+                  </>
+                )}
+                <LoadingButton
+                  loading={isPending}
                   variant="contained"
-                  startIcon={<CloudUploadIcon />}
+                  size="large"
+                  type="submit"
                 >
-                  Upload file
-                  <VisuallyHiddenInput type="file" {...register("hinhAnh")} />
-                </Button>
-                <Button variant="contained" size="large" type="submit">
                   Thêm phim
-                </Button>
+                </LoadingButton>
               </Stack>
             </form>
           </Grid>

@@ -32,3 +32,15 @@ export const getMovieDetailsAPI = async (movieId) => {
     throw Error("error");
   }
 };
+
+export const addMovieAPI = async (payload) => {
+  try {
+    const response = await fetcher.post(
+      "/QuanLyPhim/ThemPhimUploadHinh",
+      payload
+    );
+    return response.data.content;
+  } catch (error) {
+    throw "Lỗi rồi";
+  }
+};
